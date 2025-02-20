@@ -119,7 +119,6 @@ public class SwayAnimate : MonoBehaviour
             float progress = (float)currentPoint/(points-1);
             float x = Mathf.Lerp(xStart,xFinish,progress);
             float y = amplitude*Mathf.Sin((Tau*frequency*x)+(Time.timeSinceLevelLoad*movementSpeed));
-            //float y = amplitude*Mathf.Sin((Tau*frequency*x)+(time*movementSpeed));
             myLineRenderer.SetPosition(currentPoint, new Vector3(x,y,0));
         }
     }
