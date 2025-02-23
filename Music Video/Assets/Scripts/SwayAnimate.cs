@@ -28,12 +28,17 @@ public class SwayAnimate : MonoBehaviour
         myLineRenderer.endColor = new Color32(226, 78, 20, 255); //red
         
         cylinder1 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        Renderer cylRenderer = cylinder1.GetComponent<Renderer>();
         cylinder1.transform.localScale = new Vector3(5f, 0.001f, 5f);
         cylinder1.transform.localRotation = Quaternion.Euler(90f, 0, 0);
-        cylRenderer.material.SetColor("_Color", Color.red);
-        
-    }
+
+        Material newMat = new Material(Shader.Find("Standard"));
+        newMat.color = Color.red;
+        SetMaterialTransparent(newMat);
+
+        Renderer cylRenderer = cylinder1.GetComponent<Renderer>();
+        cylRenderer.material = newMat;
+
+    }   
 
     // Update is called once per frame
     void Update()
@@ -168,14 +173,29 @@ public class SwayAnimate : MonoBehaviour
 
         Color currentColor = objRenderer.material.color;
 
-        float progress = (Time.time - fadeStartTime) / fadeTime;
-        float alpha = Mathf.Clamp(progress, 0, 1);
+        float targetAlpha = Mathf.Clamp(AudioSpectrum.audioAmp * 5f, 0.1f, 1f);
 
-        objRenderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
+        float progress = (Time.time - fadeStartTime) / fadeTime;
+        float newAlpha = Mathf.Clamp(progress, 0, 1);
+
+        float blend = targetAlpha * newAlpha;
+
+        objRenderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, blend);
 
         if(progress >= 1) {
             fadeStartTime = -1f;
         }
-        // objRenderer.material.color = currentColor;
+    }
+
+    private void SetMaterialTransparent(Material mat)
+    {
+        mat.SetFloat("_Mode", 3); // Set to Transparent mode
+        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        mat.SetInt("_ZWrite", 0);
+        mat.DisableKeyword("_ALPHATEST_ON");
+        mat.EnableKeyword("_ALPHABLEND_ON");
+        mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        mat.renderQueue = 3000; // Transparent queue
     }
 }
