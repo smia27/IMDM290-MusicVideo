@@ -14,7 +14,7 @@ public class AudioSpectrum : MonoBehaviour
     public static float[] samples = new float[FFTSIZE];
     public static float audioAmp = 0f;
     public static float bassAmp = 0f;
-    public static float stringAmp = 0f;
+    public static float noBassAmp = 0f;
     void Start()
     {
         source = GetComponent<AudioSource>();       
@@ -36,10 +36,10 @@ public class AudioSpectrum : MonoBehaviour
             bassAmp += samples[i];
         }
 
-        stringAmp = 0f;
-        for (int i = 15; i < 1024; i++)
+        noBassAmp = 0f;
+        for (int i = 15; i < 1024; i++) //adds up frequencies, excluding bass
         {
-            stringAmp += samples[i];
+            noBassAmp += samples[i];
         }          
     }
 }

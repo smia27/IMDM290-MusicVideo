@@ -19,7 +19,6 @@ public class SwayAnimate : MonoBehaviour
     [Range(0,2*Mathf.PI)]
     public float radians;
     bool stringBreak;
-    private float fadeStartTime = -1f;
 
     void Start()
     {   
@@ -30,7 +29,7 @@ public class SwayAnimate : MonoBehaviour
         cylinder1.transform.localRotation = Quaternion.Euler(90f, 0, 0);
 
         Material newMat = new Material(Shader.Find("Standard"));
-        newMat.color = Color.red;
+        newMat.color = new Color32(229, 52, 11, 1);
         SetMaterialTransparent(newMat);
 
         Renderer cylRenderer = cylinder1.GetComponent<Renderer>();
@@ -43,7 +42,7 @@ public class SwayAnimate : MonoBehaviour
     {
        if (Time.time <= 23.8f) // Exposition
        {            
-            Opaque(cylinder1, 1f);
+            Opaque(cylinder1);
             float cylinderSize = AudioSpectrum.bassAmp*20f + 5f;
             cylinder1.transform.localScale = new Vector3(cylinderSize, 0.001f, cylinderSize);
 
@@ -53,7 +52,7 @@ public class SwayAnimate : MonoBehaviour
 
        else if (Time.time > 23.8f && Time.time <= 47.6f) // Climax 1
        {
-            Opaque(cylinder1, 2f);  
+            Opaque(cylinder1);  
             float cylinderSize = AudioSpectrum.bassAmp*20f + 5f;
             cylinder1.transform.localScale = new Vector3(cylinderSize, 0.001f, cylinderSize);
 
@@ -80,7 +79,7 @@ public class SwayAnimate : MonoBehaviour
 
        else if (Time.time > 47.6f && Time.time <= 71.1f) // Development
        {
-            Opaque(cylinder1, 2f);
+            Opaque(cylinder1);
             
             float cylinderSize = AudioSpectrum.bassAmp*20f + 5f;
             cylinder1.transform.localScale = new Vector3(cylinderSize, 0.001f, cylinderSize);
@@ -91,12 +90,12 @@ public class SwayAnimate : MonoBehaviour
 
        else if(Time.time > 71.1f && Time.time <= 86.7f) // Exposition Coda
        {
-            Opaque(cylinder1, 2f);
+            Opaque(cylinder1);
        }
 
        else if (Time.time > 86.7f && Time.time <= 109f) // Climax 2
        {
-            Opaque(cylinder1, 2f);
+            Opaque(cylinder1);
 
             //Accordion
             if (Time.time > 86.7f && Time.time <= 91.1f)
@@ -119,17 +118,17 @@ public class SwayAnimate : MonoBehaviour
 
        else if (Time.time > 109f && Time.time <= 132.6f) // Falling Action
        {
-            Opaque(cylinder1, 2f);
+            Opaque(cylinder1);
        }
 
        else if (Time.time > 132.6f && Time.time <= 140f) // Resolution
        {
-            Opaque(cylinder1, 2f);
+            Opaque(cylinder1);
        }
 
        else // After song is over
        {
-            Opaque(cylinder1, 2f);
+            Opaque(cylinder1);
        }
     }
 
@@ -142,14 +141,13 @@ public class SwayAnimate : MonoBehaviour
 
         if (stringBreak == true)
         {
-            frequency = AudioSpectrum.audioAmp * 100f;
-            amplitude = AudioSpectrum.audioAmp * 50f;
+            frequency = AudioSpectrum.noBassAmp * 2f;
+            amplitude = AudioSpectrum.noBassAmp * 50f;
         }else //when other instruments are playing, line renders at a lower amp/frequency, and the movements are more subtle
         {
-            frequency = AudioSpectrum.audioAmp / 5f;
-            amplitude = AudioSpectrum.audioAmp / 4f;
+            frequency = AudioSpectrum.noBassAmp / 5f;
+            amplitude = AudioSpectrum.noBassAmp / 4f;
         }
-        
  
         myLineRenderer.positionCount = points;
         for(int currentPoint = 0; currentPoint<points;currentPoint++)
@@ -161,29 +159,17 @@ public class SwayAnimate : MonoBehaviour
         }
     }
 
-    private void Opaque(GameObject obj, float fadeTime) {
+    private void Opaque(GameObject obj) {
         if(obj == null) return;
 
         Renderer objRenderer = obj.GetComponent<Renderer>();
         if(objRenderer == null || objRenderer.material.color == null) return;
 
-        if(fadeStartTime < 0)
-            fadeStartTime = Time.time;
-
         Color currentColor = objRenderer.material.color;
 
         float targetAlpha = Mathf.Clamp(AudioSpectrum.bassAmp * 5f, 0.1f, 1f);
 
-        /*float progress = (Time.time - fadeStartTime) / fadeTime;
-        float newAlpha = Mathf.Clamp(progress, 0, 1);
-
-        float blend = targetAlpha * newAlpha;*/
-
         objRenderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, targetAlpha);
-
-        /*if(progress >= 1) {
-            fadeStartTime = -1f;
-        }*/
     }
 
     private void SetMaterialTransparent(Material mat)
