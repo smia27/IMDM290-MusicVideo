@@ -23,17 +23,22 @@ public class SwayAnimate : MonoBehaviour
     void Start()
     {   
         myLineRenderer = GetComponent<LineRenderer>();
+        //myLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        //myLineRenderer.startColor = new Color32(255, 255, 255, 0);
+        //myLineRenderer.endColor = new Color32(255, 255, 255, 0);
         
         cylinder1 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         cylinder1.transform.localScale = new Vector3(5f, 0.001f, 5f);
         cylinder1.transform.localRotation = Quaternion.Euler(90f, 0, 0);
 
         Material newMat = new Material(Shader.Find("Standard"));
-        newMat.color = new Color32(229, 52, 11, 1);
+        newMat.color = new Color32(234, 75, 81, 1); //orange color
         SetMaterialTransparent(newMat);
 
         Renderer cylRenderer = cylinder1.GetComponent<Renderer>();
         cylRenderer.material = newMat;
+
+        RandomObjects();
 
     }   
 
@@ -141,8 +146,8 @@ public class SwayAnimate : MonoBehaviour
 
         if (stringBreak == true)
         {
-            frequency = AudioSpectrum.noBassAmp * 2f;
-            amplitude = AudioSpectrum.noBassAmp * 50f;
+            frequency = AudioSpectrum.audioAmp * 2f;
+            amplitude = AudioSpectrum.audioAmp * 50f;
         }else //when other instruments are playing, line renders at a lower amp/frequency, and the movements are more subtle
         {
             frequency = AudioSpectrum.noBassAmp / 5f;
@@ -182,5 +187,16 @@ public class SwayAnimate : MonoBehaviour
         mat.EnableKeyword("_ALPHABLEND_ON");
         mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
         mat.renderQueue = 3000; // Transparent queue
+    }
+
+    private void RandomObjects()
+    {
+        GameObject[] objects = new GameObject[8];
+
+        for (int i = 0; i < objects.Length; i++)
+        {
+            objects[i] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            objects[i].transform.position = new Vector3 (UnityEngine.Random.Range(-5f,5f), UnityEngine.Random.Range(-5f,5f), 0f);
+        }
     }
 }
