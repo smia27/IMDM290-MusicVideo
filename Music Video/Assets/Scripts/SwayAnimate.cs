@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,14 +36,16 @@ public class SwayAnimate : MonoBehaviour
     {
        if (Time.time <= 23.8f) // Exposition
        {
-            cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), 0f, 0f);
+            Opaque(cylinder1, 2f);
+            // cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), 0f, 0f);
             stringBreak = false;
             DrawLine();
        }
 
        else if (Time.time > 23.8f && Time.time <= 47.6f) // Climax 1
        {
-            cylinder1.transform.position = new Vector3(0f, Mathf.Sin(Time.time), 0f);
+            Opaque(cylinder1, 2f);  
+            // cylinder1.transform.position = new Vector3(0f, Mathf.Sin(Time.time), 0f);
             stringBreak = false;
             DrawLine();
             //String breaks
@@ -65,7 +68,8 @@ public class SwayAnimate : MonoBehaviour
 
        else if (Time.time > 47.6f && Time.time <= 71.1f) // Development
        {
-            cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), Mathf.Sin(Time.time), 0f);
+            Opaque(cylinder1, 2f);
+            // cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), Mathf.Sin(Time.time), 0f);
             
             stringBreak = false;
             DrawLine();
@@ -73,12 +77,14 @@ public class SwayAnimate : MonoBehaviour
 
        else if(Time.time > 71.1f && Time.time <= 86.7f) // Exposition Coda
        {
-            cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), 0f, 0f);
+            Opaque(cylinder1, 2f);
+            // cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), 0f, 0f);
        }
 
        else if (Time.time > 86.7f && Time.time <= 109f) // Climax 2
        {
-            cylinder1.transform.position = new Vector3(0f, Mathf.Sin(Time.time), 0f);
+            Opaque(cylinder1, 2f);
+            // cylinder1.transform.position = new Vector3(0f, Mathf.Sin(Time.time), 0f);
 
             //Accordion
             if (Time.time > 86.7f && Time.time <= 91.1f)
@@ -101,17 +107,20 @@ public class SwayAnimate : MonoBehaviour
 
        else if (Time.time > 109f && Time.time <= 132.6f) // Falling Action
        {
-            cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), Mathf.Sin(Time.time), 0f);
+            Opaque(cylinder1, 2f);
+            // cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), Mathf.Sin(Time.time), 0f);
        }
 
        else if (Time.time > 132.6f && Time.time <= 140f) // Resolution
        {
-            cylinder1.transform.position = new Vector3(0f, 0f, Mathf.Sin(Time.time));
+            Opaque(cylinder1, 2f);
+            // cylinder1.transform.position = new Vector3(0f, 0f, Mathf.Sin(Time.time));
        }
 
        else // After song is over
        {
-            cylinder1.transform.position = new Vector3(0f, 0f, 0f);
+            Opaque(cylinder1, 2f);
+            // cylinder1.transform.position = new Vector3(0f, 0f, 0f);
        }
     }
 
@@ -143,7 +152,21 @@ public class SwayAnimate : MonoBehaviour
         }
     }
 
-    private void Opaque(GameObject obj, float time, AudioSource source) {
-        
+    private void Opaque(GameObject obj, float fadeTime) {
+        if(obj == null) return;
+
+        Renderer objRenderer = obj.GetComponent<Renderer>();
+        if(objRenderer == null || objRenderer.material.color == null) return;
+
+        Color currentColor = objRenderer.material.color;
+        float startTime = Time.time;
+
+        while(Time.time - startTime < fadeTime) {
+            float progress = (Time.time - startTime) / fadeTime;
+            float alpha = Mathf.Clamp(Mathf.Lerp(0, 1, progress), 0, 1);
+            objRenderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
+        }
+
+        objRenderer.material.color = currentColor;
     }
 }
