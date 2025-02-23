@@ -19,6 +19,7 @@ public class SwayAnimate : MonoBehaviour
     [Range(0,2*Mathf.PI)]
     public float radians;
     bool stringBreak;
+    private float fadeStartTime = -1f;
 
     void Start()
     {   
@@ -26,17 +27,21 @@ public class SwayAnimate : MonoBehaviour
         myLineRenderer.startColor = new Color32(252, 170, 40, 255); //orange
         myLineRenderer.endColor = new Color32(226, 78, 20, 255); //red
         
-        cylinder1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        cylinder1 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        Renderer cylRenderer = cylinder1.GetComponent<Renderer>();
         cylinder1.transform.localScale = new Vector3(5f, 0.001f, 5f);
         cylinder1.transform.localRotation = Quaternion.Euler(90f, 0, 0);
+        cylRenderer.material.SetColor("_Color", Color.red);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
        if (Time.time <= 23.8f) // Exposition
-       {
+       {            
             Opaque(cylinder1, 2f);
+            
             // cylinder1.transform.position = new Vector3(Mathf.Sin(Time.time), 0f, 0f);
             stringBreak = false;
             DrawLine();
@@ -158,15 +163,19 @@ public class SwayAnimate : MonoBehaviour
         Renderer objRenderer = obj.GetComponent<Renderer>();
         if(objRenderer == null || objRenderer.material.color == null) return;
 
+        if(fadeStartTime < 0)
+            fadeStartTime = Time.time;
+
         Color currentColor = objRenderer.material.color;
-        float startTime = Time.time;
 
-        while(Time.time - startTime < fadeTime) {
-            float progress = (Time.time - startTime) / fadeTime;
-            float alpha = Mathf.Clamp(Mathf.Lerp(0, 1, progress), 0, 1);
-            objRenderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
+        float progress = (Time.time - fadeStartTime) / fadeTime;
+        float alpha = Mathf.Clamp(progress, 0, 1);
+
+        objRenderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
+
+        if(progress >= 1) {
+            fadeStartTime = -1f;
         }
-
-        objRenderer.material.color = currentColor;
+        // objRenderer.material.color = currentColor;
     }
 }
