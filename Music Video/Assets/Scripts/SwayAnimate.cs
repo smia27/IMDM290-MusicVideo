@@ -19,7 +19,8 @@ public class SwayAnimate : MonoBehaviour
     public float radians;
     
     bool stringBreak;
-    bool exposition; //I'm thinking of adding a conditional for the drawline and opaque methods that change the colors of the line and cylinder only for the exposition segments to give it a more subdued feeling- Anna
+    bool exposition;
+    bool ending;
 
     void Start()
     {   
@@ -29,9 +30,9 @@ public class SwayAnimate : MonoBehaviour
         float alpha = 1.0f;
         Gradient gradient = new Gradient();
         Color startColor = new Color32(33, 158, 188, 1); //Cerulean color
-        Color endColor = new Color32(24, 145, 175, 1); //Lighter cerulean color
+        //Color endColor = new Color32(24, 145, 175, 1); //Lighter cerulean color
         gradient.SetKeys(
-            new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(endColor, 1.0f) },
+            new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(startColor, 1.0f) },
             new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
         );
         midLineRenderer.colorGradient = gradient;
@@ -43,7 +44,7 @@ public class SwayAnimate : MonoBehaviour
 
         // Attaches material to cylinder
         Material newMat = new Material(Shader.Find("Standard"));
-        newMat.color = new Color32(229, 126, 9, 1); //orange color
+        newMat.color = new Color32(17, 178, 108, 1); //Dark green color
         SetMaterialTransparent(newMat);
 
         Renderer cylRenderer = cylinder1.GetComponent<Renderer>();
@@ -62,6 +63,7 @@ public class SwayAnimate : MonoBehaviour
        DrawLine(midLineRenderer);
        stringBreak = false;
        exposition = false;
+       ending = false;
 
        if (Time.time <= 23.8f) // Exposition
        {            
@@ -120,7 +122,7 @@ public class SwayAnimate : MonoBehaviour
             }
 
             //Skybox flashes color at the "hey!"s
-            if(Time.time > 93.74f && Time.time <= 95.96f)
+            if(Time.time > 93.77f && Time.time <= 97.47f)
             {
                 SkyboxFlash();
             }else
@@ -146,14 +148,14 @@ public class SwayAnimate : MonoBehaviour
 
        else if (Time.time > 132.6f && Time.time <= 140f) // Resolution
        {
-            stringBreak = true;
             //String breaks
             if(Time.time > 132.6f && Time.time <= 134.9f)
             {
                 stringBreak = true;
-            }else if (Time.time > 97.8f && Time.time <= 98.8f)
+            }else if (Time.time > 138.6f && Time.time <= 140f)
             {
                 stringBreak = true;
+                ending = true;
             }
        }
 
@@ -191,10 +193,23 @@ public class SwayAnimate : MonoBehaviour
             lineRenderer.SetPosition(currentPoint, new Vector3(x,y,0));
         }
         
+        // Changes the line of the color based on certain sections of the song
+        Color32 currentColor;
+        if (stringBreak == true && ending == false) //During a string break and not the ending of the song
+        {
+            currentColor = new Color32(70, 0, 211, 1); //Dark blue color
+        }else if (exposition == false) //During the climaxes/buildup
+        {
+            currentColor = new Color32(198, 6, 0, 1); //Dark red/orange color
+        }else //During an exposition section
+        {
+            currentColor = new Color32(33, 158, 188, 1); //Cerulean color
+        }
+
         // Line transparency is reactive to amplitude of music
         Gradient gradient = new Gradient();
         gradient.SetKeys(
-            new GradientColorKey[] { new GradientColorKey(lineRenderer.startColor, 0.0f), new GradientColorKey(lineRenderer.endColor, 1.0f) },
+            new GradientColorKey[] { new GradientColorKey(currentColor, 0.0f), new GradientColorKey(currentColor, 1.0f) },
             new GradientAlphaKey[] { new GradientAlphaKey(Mathf.Clamp(AudioSpectrum.noBassAmp, 0, 1), 0.0f), new GradientAlphaKey(Mathf.Clamp(AudioSpectrum.noBassAmp, 0, 1), 1.0f) }
         );
         lineRenderer.colorGradient = gradient;
@@ -205,9 +220,17 @@ public class SwayAnimate : MonoBehaviour
 
         Renderer objRenderer = obj.GetComponent<Renderer>();
         if(objRenderer == null || objRenderer.material.color == null) return;
-
-        Color currentColor = objRenderer.material.color;
-
+        
+        // Changes the color of the cylinder based on certain sections of the song
+        Color currentColor;
+        if (exposition == false) //During climax/buildup
+        {
+            currentColor = new Color32(251, 133, 9, 0); //Orange color
+        }else //During exposition
+        {
+            currentColor = new Color32(17, 178, 108, 1); //Dark green color
+        }
+        
         float targetAlpha = Mathf.Clamp(AudioSpectrum.bassAmp * 5f, 0.01f, 1f);
 
         objRenderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, targetAlpha);
@@ -240,7 +263,7 @@ public class SwayAnimate : MonoBehaviour
     {
         Color colorStart = Color.black;
         Color colorEnd = new Color32(255, 183, 3, 1); //light yellow/orange color
-        float duration = (20f/27f)/2f; //bpm of the song is 81
+        float duration = (20f/27f)/2f; //bpm of the song is 81, so 60/81 (or 20/27) seconds is the length of a beat
         float lerp = Mathf.PingPong(Time.time, duration) / duration;
         RenderSettings.skybox.SetColor("_Tint", Color.Lerp(colorStart, colorEnd, lerp));
     }
