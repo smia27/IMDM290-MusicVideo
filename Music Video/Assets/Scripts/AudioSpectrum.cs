@@ -37,7 +37,7 @@ public class AudioSpectrum : MonoBehaviour
         }
 
         noBassAmp = 0f;
-        for (int i = 15; i < 1024; i++) //adds up frequencies, excluding bass
+        for (int i = 9; i < 1024; i++) //adds up frequencies, excluding bass
         {
             noBassAmp += samples[i];
         }          
