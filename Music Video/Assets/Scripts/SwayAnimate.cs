@@ -30,7 +30,6 @@ public class SwayAnimate : MonoBehaviour
         float alpha = 1.0f;
         Gradient gradient = new Gradient();
         Color startColor = new Color32(33, 158, 188, 1); //Cerulean color
-        //Color endColor = new Color32(24, 145, 175, 1); //Lighter cerulean color
         gradient.SetKeys(
             new GradientColorKey[] { new GradientColorKey(startColor, 0.0f), new GradientColorKey(startColor, 1.0f) },
             new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
@@ -91,11 +90,6 @@ public class SwayAnimate : MonoBehaviour
             
        }
 
-       else if (Time.time > 47.6f && Time.time <= 71.1f) // Development
-       {
-        
-       }
-
        else if(Time.time > 71.1f && Time.time <= 86.7f) // Exposition Coda
        {
             exposition = true;
@@ -103,12 +97,6 @@ public class SwayAnimate : MonoBehaviour
 
        else if (Time.time > 86.7f && Time.time <= 109f) // Climax 2
        {
-            //Accordion
-            if (Time.time > 86.7f && Time.time <= 91.1f)
-            {
-                // Accordion sound animation here
-            }
-            
             //String breaks
             if(Time.time > 91.1f && Time.time <= 92.9f)
             {
@@ -127,7 +115,7 @@ public class SwayAnimate : MonoBehaviour
                 SkyboxFlash();
             }else
             {
-                RenderSettings.skybox.SetColor("_Tint", Color.black);
+                RenderSettings.skybox.SetColor("_Tint", Color.black); //Makes sure skybox is back to black after flashes
             }
        }
 
@@ -178,7 +166,7 @@ public class SwayAnimate : MonoBehaviour
         {
             frequency = AudioSpectrum.audioAmp / 2f;
             amplitude = AudioSpectrum.audioAmp * 3f;
-        }else //when other instruments are playing, line renders at a lower amp/frequency, and the movements are more subtle
+        }else //when other instruments are playing, line renders at a lower amp/frequency
         {
             frequency = AudioSpectrum.noBassAmp / 2f;
             amplitude = AudioSpectrum.noBassAmp / 2f;
@@ -246,17 +234,6 @@ public class SwayAnimate : MonoBehaviour
         mat.EnableKeyword("_ALPHABLEND_ON");
         mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
         mat.renderQueue = 3000; // Transparent queue
-    }
-
-    private void RandomObjects()
-    {
-        GameObject[] objects = new GameObject[8];
-
-        for (int i = 0; i < objects.Length; i++)
-        {
-            objects[i] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            objects[i].transform.position = new Vector3 (UnityEngine.Random.Range(-5f,5f), UnityEngine.Random.Range(-5f,5f), 0f);
-        }
     }
 
     private void SkyboxFlash()
